@@ -8,7 +8,7 @@ class ItemInline(admin.TabularInline):
 
 @admin.register(Survivor)
 class SurvivorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'age', 'sex', 'latitude', 'longitude', 'infected')
+    list_display = ('name', 'age', 'sex', 'last_location', 'infected')
     inlines = [ItemInline]
 
 

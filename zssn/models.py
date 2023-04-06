@@ -9,6 +9,17 @@ class Survivor(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     infected = models.BooleanField(default=False)
+    infection_count = models.PositiveIntegerField(default=0)
+
+    @property
+    def last_location(self):
+        return (self.latitude, self.longitude)
+
+    def mark_infected(self):
+        self.infection_count += 1
+        if self.infection_count >= 3:
+            self.infected = True
+        self.save()
 
 
 class Item(models.Model):

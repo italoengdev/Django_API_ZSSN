@@ -1,13 +1,15 @@
-from django.urls import path, include
+from django.urls import path
 from django.contrib import admin
-from rest_framework.authtoken.views import obtain_auth_token
-from zssn.views import SurvivorListCreateView, SurvivorRetrieveUpdateView, ItemListCreateView, TradeCreateView
+
+from zssn.views import SurvivorListCreateView, SurvivorRetrieveUpdateLocation, ItemListCreateView, SurvivorDetailAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/survivors/', SurvivorListCreateView.as_view(),
+    path('survivors/', SurvivorListCreateView.as_view(),
          name='survivor_list_create'),
-    path('api/survivors/<int:pk>/', SurvivorRetrieveUpdateView.as_view(),
+    path('survivors/update/<int:pk>/', SurvivorRetrieveUpdateLocation.as_view(),
          name='survivor_retrieve_update'),
-    path('api/items/', ItemListCreateView.as_view(), name='item_list_create')
+    path('survivors/flag/<int:pk>/', SurvivorDetailAPIView.as_view(),
+         name='survivor_retrieve_update'),
+    path('items/', ItemListCreateView.as_view(), name='item_list_create')
 ]

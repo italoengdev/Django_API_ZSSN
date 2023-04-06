@@ -1,27 +1,31 @@
 from rest_framework import serializers
 from .models import Survivor, Item
 
+
+class SurvivorSerializer1(serializers.ModelSerializer):
+    class Meta:
+        model = Survivor
+        fields = ('id', 'name', 'infected')
+
+
 class ItemSerializer(serializers.ModelSerializer):
+    survivor = SurvivorSerializer1(read_only=True)
+
     class Meta:
         model = Item
-        fields = ('type', 'amount')
+        fields = ('id', 'type', 'amount', 'value', 'survivor')
+
 
 class SurvivorSerializer(serializers.ModelSerializer):
-    items = ItemSerializer(many=True)
 
     class Meta:
         model = Survivor
-        fields = ('id', 'name', 'age', 'sex', 'latitude', 'longitude', 'infected', 'items')
-
-    def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        survivor = Survivor.objects.create(**validated_data)
-        for item_data in items_data:
-            Item.objects.create(survivor=survivor, **item_data)
-        return survivor
+        fields = ('id', 'name', 'age', 'sex', 'latitude',
+                  'longitude', 'infected', 'infection_count')
 
     def update(self, instance, validated_data):
         instance.latitude = validated_data.get('latitude', instance.latitude)
-        instance.longitude = validated_data.get('longitude', instance.longitude)
+        instance.longitude = validated_data.get(
+            'longitude', instance.longitude)
         instance.save()
         return instance
