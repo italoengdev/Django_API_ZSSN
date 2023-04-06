@@ -1,28 +1,13 @@
-"""
-URL configuration for config project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+from django.urls import path, include
 from django.contrib import admin
-from django.urls import path
-from zssn.views import SurvivorListCreateAPIView, SurvivorRetrieveUpdateDestroyAPIView
-
+from rest_framework.authtoken.views import obtain_auth_token
+from zssn.views import SurvivorListCreateView, SurvivorRetrieveUpdateView, ItemListCreateView, TradeCreateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('survivors/', SurvivorListCreateAPIView.as_view(), name='survivor_list_create'),
-    path('survivors/<int:pk>/', SurvivorRetrieveUpdateDestroyAPIView.as_view(), name='survivor_retrieve_update_destroy'),
+    path('api/survivors/', SurvivorListCreateView.as_view(),
+         name='survivor_list_create'),
+    path('api/survivors/<int:pk>/', SurvivorRetrieveUpdateView.as_view(),
+         name='survivor_retrieve_update'),
+    path('api/items/', ItemListCreateView.as_view(), name='item_list_create')
 ]
-
-

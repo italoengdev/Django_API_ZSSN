@@ -1,50 +1,27 @@
 from rest_framework import serializers
-from .models import Survivor, InventoryItem, SurvivorInventory
+from .models import Survivor, Item
 
-
-class InventoryItemSerializer(serializers.ModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = InventoryItem
-        fields = ['id', 'name', 'value']
-
+        model = Item
+        fields = ('type', 'amount')
 
 class SurvivorSerializer(serializers.ModelSerializer):
-    
+    items = ItemSerializer(many=True)
 
     class Meta:
         model = Survivor
-        fields = ['id', 'name', 'age', 'gender', 'latitude',
-                  'longitude', 'status', 'inventory_items']
+        fields = ('id', 'name', 'age', 'sex', 'latitude', 'longitude', 'infected', 'items')
 
     def create(self, validated_data):
-        inventory_items_data = validated_data.pop('inventory_items')
+        items_data = validated_data.pop('items')
         survivor = Survivor.objects.create(**validated_data)
-        for item_data in inventory_items_data:
-            item = InventoryItem.objects.get(
-                id=item_data['inventory_item']['id'])
-            SurvivorInventory.objects.create(
-                survivor=survivor, inventory_item=item, quantity=item_data['quantity'])
+        for item_data in items_data:
+            Item.objects.create(survivor=survivor, **item_data)
         return survivor
 
     def update(self, instance, validated_data):
-        inventory_items_data = validated_data.pop('inventory_items')
-        instance.name = validated_data.get('name', instance.name)
-        instance.age = validated_data.get('age', instance.age)
-        instance.gender = validated_data.get('gender', instance.gender)
         instance.latitude = validated_data.get('latitude', instance.latitude)
-        instance.longitude = validated_data.get(
-            'longitude', instance.longitude)
-        instance.status = validated_data.get('status', instance.status)
+        instance.longitude = validated_data.get('longitude', instance.longitude)
         instance.save()
-
-        items_to_delete = instance.inventory_items.all()
-        for item in items_to_delete:
-            item.delete()
-
-        for item_data in inventory_items_data:
-            item = InventoryItem.objects.get(
-                id=item_data['inventory_item']['id'])
-            SurvivorInventory.objects.create(
-                survivor=instance, inventory_item=item, quantity=item_data['quantity'])
-
         return instance

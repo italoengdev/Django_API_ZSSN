@@ -1,21 +1,19 @@
 from django.contrib import admin
-from .models import InventoryItem, Survivor, SurvivorInventory
+from .models import Survivor, Item
 
 
-class SurvivorInventoryInline(admin.TabularInline):
-    model = SurvivorInventory
-    extra = 1
+class ItemInline(admin.TabularInline):
+    model = Item
 
 
+@admin.register(Survivor)
 class SurvivorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'age', 'gender', 'latitude', 'longitude', 'status')
-    list_filter = ('status', 'gender')
-    inlines = [SurvivorInventoryInline]
+    list_display = ('name', 'age', 'sex', 'latitude', 'longitude', 'infected')
+    inlines = [ItemInline]
 
 
-class InventoryItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'value')
-
-
-admin.site.register(Survivor, SurvivorAdmin)
-admin.site.register(InventoryItem, InventoryItemAdmin)
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('type', 'amount', 'survivor', 'value')
+    list_filter = ('type',)
+    search_fields = ('type', 'survivor__name')
